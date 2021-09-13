@@ -6,7 +6,9 @@ class Pagination extends Component {
     render() { 
         const { total, pageCount, activePage } = this.props;
         const totalPages = Math.ceil(total/pageCount);
+        
         const pages = _.range(1, totalPages+1, 1)
+        if(total <= pageCount ) return null;
         return (
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">

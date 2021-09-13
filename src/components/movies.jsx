@@ -1,18 +1,18 @@
 import React, { Component } from "react";
-import { BsFillBookmarkFill, BsStar, BsStarFill } from "react-icons/bs";
 import Pagination from "./common/pagination";
 import Navbar from './navbar';
-import { getMovies,getGenres } from '../services/movies.service';
+import { getMovies, getGenres } from '../services/movies.service';
 import Filter from './common/filtering'
 import "./data";
+import MoviesTable from "./movies.table";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
-    genres: getGenres(),
+    genres: [{ 'name': 'All Genres'}, ...getGenres()],
     activePage: 1,
     pageCount: 5,
-    selectedGenre: ''
+    selectedGenre: 'All Genres'
   };
 
   handleRating = (idx) => {
@@ -33,12 +33,12 @@ class Movies extends Component {
          }
       
    handleSingleGenre = (name) => {
-     this.setState({...this.state, selectedGenre: name})
+     this.setState({...this.state, selectedGenre: name, activePage: 1})
    } 
 
   
-  paginateMovies = () => {
-    const { movies, activePage, pageCount, genres } = this.state;
+  paginateMovies = (movies) => {
+    const { activePage, pageCount } = this.state;
         const start = (activePage-1)*pageCount;
         const updatedMovies = movies.slice(start, start+pageCount);
         return updatedMovies;
@@ -65,74 +65,54 @@ class Movies extends Component {
         }
     }
 }
+
+filteredMovies = () => {
+  const { movies, selectedGenre } = this.state;
+
+  const filteredMovies =  movies.filter(movie => {
+    if(selectedGenre === 'All Genres') return true;
+    if(movie.genres.includes(selectedGenre)) return true;
+    return false;
+  })
+  return filteredMovies;
+}
   render() {    
-      const movies = this.paginateMovies()
+    const filtered = this.filteredMovies();
+    const movies = this.paginateMovies(filtered)
       
     return (
       <>
-      <Navbar 
-      search = {this.searchHandler}
-  />
+        <Navbar 
+          search={this.searchHandler}         
+        />
         <div className=" container">
-      <div className="row container bg-light">
-        <div className="col-md-10">
-          <p className="pb-1 pt-3">Showing {movies.length} movies</p>
-          <table className="table table-striped" id="table">
-            <thead>
-              <tr>
-                <th scope="col"></th>
-               
-                <th scope="col" style={{ color: "gray" }}>
-                  Rank & Title
-                </th>
-                <th scope="col" style={{ color: "gray" }}>
-                  IMDB Ratings
-                </th>
-                <th scope="col" style={{ color: "gray" }}>
-                  Your Ratings
-                </th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {movies.map((movie, idx) => (
-                <tr>
-                  
-                  <th scope="row">
-                    <img src={movie.posterurl} height="60" width="40" />
-                  </th>                 
-                  <td>{movie.title}</td>
-                  <td><BsStarFill /> {movie.imdbRating}</td>
-                  <td onClick={()=>(this.handleRating(idx+1))}>
-                    {(movie.rating) === 'rated' ? <BsStarFill /> : <BsStar />}
-                  </td>
-                  <td>
-                    <BsFillBookmarkFill
-                      style={{ "color": "gray", "fontSize": "30px" }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Pagination
-            total = {this.state.movies.length}
-            pageCount = {5}
-            activePage = { this.state.activePage }
-            onPageChange = { this.changePageHandler }
-           />
+          <div className="row container bg-light">
+            <div className="col-md-10">
+              <p className="pb-1 pt-3">Showing {movies.length} movies</p>
+              <MoviesTable 
+                movies={movies}               
+              />
+              <Pagination
+                total={filtered.length}
+                pageCount={this.state.pageCount}
+                activePage={this.state.activePage}
+                onPageChange={this.changePageHandler}
+              />
+            </div>
+            <div className="col-md-2 mt-5 pt-5">
+              <Filter
+                items={this.state.genres.map((genre, idx) => ({
+                  _id: idx,
+                  name: genre.name,
+                }))}
+                onClick={this.handleSingleGenre}
+                selectedItem={this.state.selectedGenre}
+              />
+            </div>
+          </div>
         </div>
-        <div className="col-md-2 mt-5 pt-5">
-
-            <Filter genres = {this.state.genres} 
-                    handleSingleGenre = { this.handleSingleGenre }
-                    selectedGenre = { this.state.selectedGenre }
-            />
-        </div>
-      </div>
-      </div>
       </>
-    )
+    );
   }
 }
 export default Movies;

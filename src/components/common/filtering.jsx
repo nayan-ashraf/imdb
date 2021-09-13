@@ -1,28 +1,24 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class Filter extends Component {
-    state = {  }
-    render() { 
-        return ( 
-            <ul class="list-group">
-            {
-              this.props.genres.map( genre =>(
-                <li 
-                  key= {genre.id} 
-                  className={ (this.props.selectedGenre == genre.name) ?'list-group-item active' : 'list-group-item'} 
-                  onClick = {() => (this.props.handleSingleGenre(genre.name))}
-                  style = {{'cursor': 'pointer'}}
-                >
-                  {genre.name}
-                  
-               </li>
-  
-              ))
-            }
-             
-            </ul>
-         );
-    }
+const Filter = ({selectedItem, onClick, items}) => {
+  return (
+    <ul class="list-group">
+      {items.map((item) => (
+        <li
+          key={item._id}
+          className={
+            selectedItem == item.name
+              ? "list-group-item active"
+              : "list-group-item"
+          }
+          onClick={() => onClick(item.name)}
+          style={{ cursor: "pointer" }}
+        >
+          {item.name}
+        </li>
+      ))}
+    </ul>
+  );
 }
  
 export default Filter;
