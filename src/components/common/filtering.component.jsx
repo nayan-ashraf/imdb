@@ -2,7 +2,7 @@ import React from 'react';
 
 const Filter = ({selectedItem, onClick, items}) => {
   return (
-    <ul class="list-group">
+    <ul class="list-group" style={{'height': '60vh', 'overflowX': 'hidden', 'overflowY': 'auto'}}>
       {items.map((item) => (
         <li
           key={item._id}

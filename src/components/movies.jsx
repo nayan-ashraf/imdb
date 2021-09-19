@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import Pagination from "./common/pagination";
-import Navbar from './navbar';
+import Pagination from "./common/pagination.component";
 import { getMovies, getGenres } from '../services/movies.service';
-import Filter from './common/filtering'
-import "./data";
+import Filter from './common/filtering.component'
 import MoviesTable from "./movies.table";
 
 class Movies extends Component {
@@ -16,13 +14,16 @@ class Movies extends Component {
   };
 
   handleRating = (idx) => {
-         
+    
+   
            const updateMovies = this.state.movies.map((movie) => {
-             if(movie.id == idx) {
+           
+             if(movie.id-1 == idx) {              
                let ratingStatus;
-               if(movie.rating === 'Unrated') ratingStatus = 'rated'
-               if(movie.rating === 'rated') ratingStatus = 'Unrated'
-               const newData = {...movie, rating: ratingStatus}
+               if(movie.isRated == true ) ratingStatus = false;
+               if(movie.isRated == false) ratingStatus = true;
+               const newData = {...movie, isRated: ratingStatus}
+               console.log(ratingStatus)
                return newData;
               
              }
@@ -30,6 +31,7 @@ class Movies extends Component {
              
            })
            this.setState({...this.state, movies: updateMovies});
+           
          }
       
    handleSingleGenre = (name) => {
@@ -82,16 +84,17 @@ filteredMovies = () => {
       
     return (
       <>
-        <Navbar 
-          search={this.searchHandler}         
-        />
+      
         <div className=" container">
-          <div className="row container bg-light">
+          <div className="row container bg-light" style={{'height': '80vh'}}>
             <div className="col-md-10">
-              <p className="pb-1 pt-3">Showing {movies.length} movies</p>
+              <div style={{'height': '70vh'}}>
+              <p className="pb-1 pt-3">Showing {movies.length}  of { filtered.length } movies</p>
               <MoviesTable 
-                movies={movies}               
+                movies={movies}  
+                handleRating={ this.handleRating }             
               />
+              </div>
               <Pagination
                 total={filtered.length}
                 pageCount={this.state.pageCount}

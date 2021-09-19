@@ -12,7 +12,7 @@ class Pagination extends Component {
         return (
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-              <li class="page-item ">
+              <li class={activePage === 1 ? "page-item disabled" : "page-item "}>
                 <a class="page-link" href="#" tabindex="-1" style={{'cursor':'pointer'}}
                 onClick={() => activePage > 1 ? this.props.onPageChange(activePage-1) : null}
 
@@ -31,7 +31,7 @@ class Pagination extends Component {
                 </li>
               ))}
 
-              <li class="page-item">
+              <li class={activePage===totalPages ?"page-item disabled": "page-item"}>
                 <a class="page-link" style={{'cursor':'pointer'}}
                 onClick={()=>(activePage+1 <= totalPages ?this.props.onPageChange(activePage+1):null)}
                 >Next</a>
