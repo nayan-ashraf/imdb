@@ -1,53 +1,73 @@
 import React from "react";
-class LogIN extends React.Component {
-  state = {
-    user: { userName: "", passWord: "" },
-  };
-  handleSubmit = (e) => {
-    e.preventDefault();
-  };
-  changeHandler = (e) => {
-    const username = e.target.value;
+import Input from './common/input.component';
+import { login } from "../services/user-service";
+import Form from "./common/form.component";
+import { Link } from "react-router-dom";
 
-    const updatedUser = { ...this.state.user };
-    updatedUser.userName = username;
-    this.setState({ user: updatedUser });
+import { ToastContainer } from 'react-toastify';
+
+
+class LogIN extends Form {
+  state = {
+    data: {
+      username: "",
+      password: "",
+    },
+    errors: {     
+      username: "",
+      password: "",
+    }
+  };
+  doSubmit =async () => {  
+  try {
+     await login(this.state.data);
+    window.location = '/movies';
+   }
+    catch(e) {
+      const errors = {...this.state.errors};      
+      errors.username = 'username may be incorrect';
+      errors.password = 'Password may be incorrect';
+      this.setState({...this.state, errors})
+    }
   };
   render() {
     return (
       
-      <div class="container w-25 mx-auto bg-light p-5" style={{'borderRadius': '0 20px 20px 0'}}>
+      <div class="container mx-auto bg-light p-5 box-shadow " style={{'borderRadius': '0 20px 20px 0', 'width': '400px', 'minHeight': '450px'}}>
          <h4 className="text-center pb-3 mb-5" style={{ 'borderBottom': '2px dashed gray', 'textTransform': 'uppercase'}}>Log In </h4>
               <form onSubmit={this.handleSubmit}>
-   
-          <div class="mb-3">            
-            <input
-              name="userName"
-              value={this.state.user.userName}
+              <ToastContainer />
+          <div class="mb-3 mt-2">            
+            <Input
+              name="username"
+              value={this.state.data.username}
               type="text"
-              class="form-control shadow-none "
               id="exampleInputEmail1"
-              aria-describedby="emailHelp"
-              autoComplete="off"
               placeholder="User Name"
-              style={{ 'border': 'none', 'outline': 'none', 'backgroundColor': 'transparent', 'border-bottom': '2px solid gray' }}
               onChange={(e) => this.changeHandler(e)}
+              errors={this.state.errors}
             />
          
           </div>
-          <div class="mb-3">
-            <input
+          <div class="mb-3  mt-2">
+            <Input
+              name="password"
               type="password"
-              class="form-control shadow-none"
               placeholder="Password"
-              style={{ 'border': 'none', 'outline': 'none', 'backgroundColor': 'transparent', 'border-bottom': '2px solid gray' }}
+              value={this.state.data.passWord}
               id="exampleInputPassword1"
+              onChange={(e) => this.changeHandler(e)}
+              errors={this.state.errors}
+
             />
           </div>        
-          
-          <button type="submit" class="btn w-100 text-white" style={{'backgroundColor': '#121212',  'textTransform': 'uppercase', 'letterSpacing': '3px'}}>
+        
+          <button type="submit" class="btn w-100 text-white mt-3" style={{'backgroundColor': '#121212',  'textTransform': 'uppercase', 'letterSpacing': '3px'}}>
             Submit
           </button>
+
+          <div className="mt-4">Don't have an account?</div>
+          <div className=""><Link to="/signUp">Create a new account</Link></div>
        
         </form>
          
